@@ -1,0 +1,6 @@
+CONTRAT DE LICENCE UTILISATEUR FINAL
+
+1. Accord : En installant cette application, vous acceptez les présentes conditions.
+2. Utilisation : Ce logiciel est fourni pour un usage personnel ou professionnel.
+3. Responsabilité : Le développeur ne peut être tenu responsable des dommages liés à l'utilisation du logiciel.
+4. Propriété : Tous les droits restent la propriété du développeur.
