@@ -1,3 +1,4 @@
+import logging
 # program/subtitle/internet_monitor.py
 import time
 import requests
@@ -65,4 +66,3 @@ class InternetMonitor:
                 break # Arrêt demandé
 
         return True # Arrêt normal par stop_event
-

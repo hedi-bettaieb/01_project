@@ -1,3 +1,4 @@
+import logging
 # program/dependencies/dependency_factory.py
 from PyQt6.QtWidgets import QMainWindow
 from program.utils.paths import PathManager
@@ -121,4 +122,3 @@ class DependencyFactory:
 
 
         return self.tasks_manager
-

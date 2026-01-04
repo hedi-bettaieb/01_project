@@ -1,3 +1,4 @@
+import logging
 # program/workers/model_worker.py
 import os
 import threading

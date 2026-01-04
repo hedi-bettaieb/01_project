@@ -1,3 +1,4 @@
+import logging
 # program/workers/ass_generation_worker.py
 import os
 from PyQt6.QtCore import QThread, pyqtSignal
@@ -68,4 +69,3 @@ class ASSGenerationWorker(QThread):
             self.finished.emit("✅ Transcription terminée.")
         except Exception as e:
             self.error.emit(self._translate_whisper_error(e))
-

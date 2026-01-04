@@ -1,3 +1,4 @@
+import logging
 # program.preferences/user_preferences.py 
 import json
 import os
@@ -65,7 +66,7 @@ class UserPreferences:
             with open(self.chemin_config, "w", encoding="utf-8") as f:
                 json.dump(self.config, f, indent=4, ensure_ascii=False)
         except PermissionError:
-            print(f"[Erreur] Impossible d'écrire dans {self.chemin_config}. Vérifiez PathManager.")
+            logging.info(f"[Erreur] Impossible d'écrire dans {self.chemin_config}. Vérifiez PathManager.")
 
 
     def update_config_from_ui(self, collected_data: dict):
@@ -163,34 +164,34 @@ class UserPreferences:
             }
 
 
-            print(f"[DEBUG] Registre complet: {self.font_registry.registry}")
-            print(f"[DEBUG] Dossier cherché: {folder_name}")
-            print(f"[DEBUG] Police cherchée: {police_nom}")
+            logging.info(f"[DEBUG] Registre complet: {self.font_registry.registry}")
+            logging.info(f"[DEBUG] Dossier cherché: {folder_name}")
+            logging.info(f"[DEBUG] Police cherchée: {police_nom}")
 
             
         except ValueError as e:
             # Erreur de police introuvable ou paramètre invalide
-            print(f"❌ Erreur de validation (ValueError): {e}")
+            logging.error(f"❌ Erreur de validation (ValueError): {e}")
             raise
         except FileNotFoundError as e:
             # Erreur de fichier police non trouvé
-            print(f"❌ Erreur de validation (FileNotFoundError): {e}")
+            logging.error(f"❌ Erreur de validation (FileNotFoundError): {e}")
             raise
         except Exception as e:
             # Erreur inattendue
-            print(f"❌ Erreur inattendue lors de la validation: {e}")
+            logging.info(f"❌ Erreur inattendue lors de la validation: {e}")
             raise ValueError(f"Erreur de configuration: {str(e)}")
 
 
     def recharger_preferences(self):
         """Recharge la configuration depuis le fichier config.json."""
-        print("🔄 Rechargement de la configuration utilisateur depuis le disque...")
+        logging.info("🔄 Rechargement de la configuration utilisateur depuis le disque...")
         try:
             with open(self.chemin_config, "r", encoding="utf-8") as f:
                 self.config = json.load(f)
-                print("Configuration rechargée :", self.config)
+                logging.info("Configuration rechargée :", self.config)
         except Exception as e:
-            print(f"❌ Erreur lors du rechargement des préférences : {e}")
+            logging.info(f"❌ Erreur lors du rechargement des préférences : {e}")
             # En cas d'échec, réinitialise avec les valeurs par défaut
             self.config = self.VALEURS_DEFAUT.copy()
 

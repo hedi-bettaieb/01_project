@@ -1,3 +1,4 @@
+import logging
 # incrusteur_controller.py
 from PyQt6.QtCore import QObject, pyqtSignal, QTimer
 from PyQt6.QtWidgets import QMessageBox
@@ -59,14 +60,14 @@ class IncrustationController(QObject):
             size = os.path.getsize(video_path)
             req_size = size * 4
             usage = shutil.disk_usage(drive)
-            print(f"[Disk] Drive: {drive} | Required: {req_size/(1024**3):.2f} GB | Available: {usage.free/(1024**3):.2f} GB")
+            logging.info(f"[Disk] Drive: {drive} | Required: {req_size/(1024**3):.2f} GB | Available: {usage.free/(1024**3):.2f} GB")
             if usage.free < req_size:
                 msg = f"Disk {drive} nearly full."
                 QMessageBox.critical(None, "Disk Space", msg)
                 return False, usage.free, req_size
             return True, usage.free, req_size
         except Exception as e:
-            print(f"[Disk] Error: {e}")
+            logging.error(f"[Disk] Error: {e}")
             return True, 0, 0
 
     def run_incrustation(self, video_path, ass_path):
@@ -111,5 +112,4 @@ class IncrustationController(QObject):
         self._stop_progress_thread()
         self.incrustationFailed.emit(error_message)
         self._cleanup_worker()
-
 

@@ -1,3 +1,4 @@
+import logging
 #program/ui/color_selector.py
 from PyQt6.QtWidgets import (
     QApplication, QDialog, QListWidget, QListWidgetItem,
@@ -63,6 +64,6 @@ class ColorSelectorDialog(QDialog):
     # app = QApplication(sys.argv)
     # dlg = ColorSelectorDialog()
     # if dlg.exec():
-        # print(f"✅ Couleur choisie : {dlg.couleur_selectionnee}")
+        # logging.info(f"✅ Couleur choisie : {dlg.couleur_selectionnee}")
     # else:
-        # print("❌ Annulé")
+        # logging.info("❌ Annulé")

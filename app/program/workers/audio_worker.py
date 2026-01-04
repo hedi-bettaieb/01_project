@@ -1,3 +1,4 @@
+import logging
 # program/worker/audio_worker.py
 from PyQt6.QtCore import QThread, pyqtSignal
 from program.audio.audio_converter import ConvertisseurAudio

@@ -129,11 +129,11 @@ class MainWindow(QMainWindow):
         workflow_index = self.cmb_workflow.currentIndex()
 
         if workflow_index == 0:
-            print("[MainWindow] Workflow sélectionné: Auto Local.")
+            logging.info("[MainWindow] Workflow sélectionné: Auto Local.")
             self.tasks_manager.run_local_auto_workflow(self)
 
         elif workflow_index == 1:
-            print("[MainWindow] Workflow sélectionné: Manuel (ASS fourni).")
+            logging.info("[MainWindow] Workflow sélectionné: Manuel (ASS fourni).")
             self.tasks_manager.run_manual_ass_workflow(self)
 
         elif workflow_index == 2:
@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
                 self.btn_process.setEnabled(True)
                 return
 
-            print(f"[MainWindow] Workflow sélectionné: Auto YouTube — URL: {url}")
+            logging.info(f"[MainWindow] Workflow sélectionné: Auto YouTube — URL: {url}")
             self.tasks_manager.run_youtube_workflow(url, self)
 
         else:

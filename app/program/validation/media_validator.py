@@ -1,3 +1,4 @@
+import logging
 #media_validator.py 
 from pathlib import Path
 import subprocess

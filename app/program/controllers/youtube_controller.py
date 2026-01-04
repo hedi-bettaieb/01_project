@@ -1,3 +1,4 @@
+import logging
 # program/controllers/youtube_controller.py
 from PyQt6.QtCore import QObject, pyqtSignal
 from PyQt6.QtWidgets import QMessageBox
@@ -29,7 +30,7 @@ class YoutubeController(QObject):
         
         # Connexions des signaux du Worker au Controller
         self.worker.progress.connect(progress_bar.setValue)
-        self.worker.statusUpdate.connect(lambda msg: print(f"[YT-Controller] {msg}"))
+        self.worker.statusUpdate.connect(lambda msg: logging.info(f"[YT-Controller] {msg}"))
         
         self.worker.finished.connect(self._handle_download_success)
         self.worker.error.connect(self._handle_download_error)
@@ -45,7 +46,7 @@ class YoutubeController(QObject):
         
         # Connexions des signaux du Worker au Controller
         self.worker.progress.connect(progress_bar.setValue)
-        self.worker.statusUpdate.connect(lambda msg: print(f"[YT-Controller] {msg}")) # Mise à jour interne
+        self.worker.statusUpdate.connect(lambda msg: logging.info(f"[YT-Controller] {msg}")) # Mise à jour interne
         
         self.worker.finished.connect(self._handle_download_success)
         self.worker.error.connect(self._handle_download_error)
@@ -66,4 +67,3 @@ class YoutubeController(QObject):
         #QMessageBox.critical(None, "Erreur de Téléchargement YouTube", message)
         self.downloadFailed.emit(message, title) 
         self.worker = None
-

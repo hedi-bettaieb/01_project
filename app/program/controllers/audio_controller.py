@@ -1,3 +1,4 @@
+import logging
 # program/controllers/audio_controller.py (Version Corrigée)
 from PyQt6.QtCore import QObject, pyqtSignal, QThread # QThread est toujours nécessaire pour les types
 from PyQt6.QtWidgets import QProgressBar 
@@ -31,7 +32,7 @@ class AudioController(QObject):
         """
         
         if self._conversion_worker and self._conversion_worker.isRunning():
-            print("[AudioController] Conversion déjà en cours.")
+            logging.info("[AudioController] Conversion déjà en cours.")
             return
 
         self._progress_bar = progress_bar 
@@ -52,7 +53,7 @@ class AudioController(QObject):
         self._conversion_worker.error.connect(self._on_conversion_error)
         # Note : Pas besoin de connecter started.connect(worker.run), car worker.start() appelle run()
 
-        print(f"[AudioController] Lancement de la conversion : {video_path} -> {audio_path}")
+        logging.info(f"[AudioController] Lancement de la conversion : {video_path} -> {audio_path}")
         self._conversion_worker.start()
 
 
@@ -91,7 +92,7 @@ class AudioController(QObject):
             self._progress_bar.setVisible(False) 
         
         # 3. Affichage de l'erreur, émission du signal et nettoyage du Worker
-        print(message) 
+        logging.info(message) 
         
         self.conversionFailed.emit(message)
         self._cleanup_worker()

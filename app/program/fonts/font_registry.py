@@ -1,3 +1,4 @@
+import logging
 #program/fonts/fonts_registry.py
 import os
 import json
@@ -35,7 +36,7 @@ class FontRegistry:
 
         self.load_registry()
         if not self._validate_registry():
-            print("[FontRegistry] Registre invalide, rescan nécessaire")
+            logging.info("[FontRegistry] Registre invalide, rescan nécessaire")
             self.scan_fonts()
 
     def load_registry(self):
@@ -47,10 +48,10 @@ class FontRegistry:
             with open(self.registry_file, 'r', encoding='utf-8') as f:
                 self.registry = json.load(f)
                 total_polices = sum(len(polices) for polices in self.registry.values())
-            print(f"[FontRegistry] {total_polices} polices chargées")
+            logging.info(f"[FontRegistry] {total_polices} polices chargées")
         except (FileNotFoundError, json.JSONDecodeError):
             self.registry = {"arabic_fonts": {}, "latin_fonts": {}}
-            print("[FontRegistry] Registre non trouvé ou corrompu")
+            logging.info("[FontRegistry] Registre non trouvé ou corrompu")
 
     def _validate_registry(self) -> bool:
         """
@@ -62,7 +63,7 @@ class FontRegistry:
         try:
             return all((self.fonts_dir / Path(path)).exists() for path in self._all_font_paths())
         except Exception as e:
-            print(f"[ERREUR] FontRegistry Validation du registre : {str(e)}")
+            logging.info(f"[ERREUR] FontRegistry Validation du registre : {str(e)}")
             return False
 
     def _all_font_paths(self):
@@ -114,7 +115,7 @@ class FontRegistry:
             
         self.save_registry()
         total_polices = sum(len(polices) for polices in self.registry.values())
-        print(f"[FontRegistry] Scan terminé : {total_polices} polices enregistrées")
+        logging.info(f"[FontRegistry] Scan terminé : {total_polices} polices enregistrées")
 
     def save_registry(self):
         """
@@ -124,7 +125,7 @@ class FontRegistry:
             with open(self.registry_file, 'w', encoding='utf-8') as f:
                 json.dump(self.registry, f, indent=2, ensure_ascii=False)
         except Exception as e:
-            print(f"[ERREUR] FontRegistry Sauvegarde du registre : {str(e)}")
+            logging.info(f"[ERREUR] FontRegistry Sauvegarde du registre : {str(e)}")
 
     def get_available_fonts(self, folder_name: str) -> list[str]:
         """
@@ -172,16 +173,16 @@ class FontRegistry:
             new_registry[category_name] = new_category_dict
 
         if removed_fonts:
-            print(f"[FontRegistry] {len(removed_fonts)} police(s) supprimée(s) du registre :")
+            logging.info(f"[FontRegistry] {len(removed_fonts)} police(s) supprimée(s) du registre :")
             for name in removed_fonts:
-                print(f"  - {name}")
+                logging.info(f"  - {name}")
         else:
-            print("[FontRegistry] Aucune police orpheline trouvée")
+            logging.info("[FontRegistry] Aucune police orpheline trouvée")
 
         self.registry = new_registry
         self.save_registry()
         total_polices = sum(len(polices) for polices in self.registry.values())
-        print(f"[FontRegistry] {total_polices} police(s) dans le registre")
+        logging.info(f"[FontRegistry] {total_polices} police(s) dans le registre")
 
     
     def get_font_path(self, font_name: str, folder_name: str) -> Path | None:
@@ -265,10 +266,10 @@ class FontRegistry:
             
             self.save_registry()
 
-            print(f"[FontRegistry] ✅ Police '{nom_police}' importée dans '{destination_folder}'.")
+            logging.info(f"[FontRegistry] ✅ Police '{nom_police}' importée dans '{destination_folder}'.")
             return nom_police
 
         except Exception as e:
-            print(f"[ERREUR] FontRegistry Échec de l'importation de {chemin_police}: {e}")
+            logging.info(f"[ERREUR] FontRegistry Échec de l'importation de {chemin_police}: {e}")
             raise
     

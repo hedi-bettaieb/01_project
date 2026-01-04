@@ -1,3 +1,4 @@
+import logging
 # program/preferences/language_manager.py 
 import json
 from pathlib import Path
@@ -27,7 +28,7 @@ class LanguageManager:
             with open(self.languages_file_path, 'r', encoding='utf-8') as f:
                 self.language_data = json.load(f)
         except Exception as e:
-            print(f"❌ Erreur critique au chargement des langues : {e}")
+            logging.info(f"❌ Erreur critique au chargement des langues : {e}")
             self.language_data = {}
 
     def get_supported_language_names(self) -> list[str]:

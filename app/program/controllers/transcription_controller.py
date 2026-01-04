@@ -1,3 +1,4 @@
+import logging
 # program/controllers/transcription_controller.py
 from PyQt6.QtCore import QObject, pyqtSignal, QThread
 from PyQt6.QtWidgets import QProgressBar, QMessageBox  
@@ -45,7 +46,7 @@ class TranscriptionController(QObject):
         Déclenche le chargement ou le téléchargement du modèle Whisper.
         Retourne True si le modèle est chargé de manière synchrone (déjà sur disque).
         """
-        print("[TranscriptionController] Vérification/Chargement du modèle...")
+        logging.info("[TranscriptionController] Vérification/Chargement du modèle...")
         
         # InternetMonitor est utilisé ici pour la vérification immédiate avant téléchargement
         monitor = InternetMonitor() 
@@ -60,7 +61,7 @@ class TranscriptionController(QObject):
         if model:
             # Cas synchrone : Modèle déjà présent et chargé.
             self._whisper_model = model
-            print("[TranscriptionController] Modèle Whisper chargé synchrone.")
+            logging.info("[TranscriptionController] Modèle Whisper chargé synchrone.")
             self.modelReady.emit()  
             return True
             
@@ -71,7 +72,7 @@ class TranscriptionController(QObject):
     def _on_model_loaded_ready(self, model):
         """Déclenché par ModelManager.modelReady (fin de chargement/téléchargement asynchrone)."""
         self._whisper_model = model
-        print("[TranscriptionController] Modèle Whisper prêt (via signal ModelReady).")
+        logging.info("[TranscriptionController] Modèle Whisper prêt (via signal ModelReady).")
         # Le TasksManager doit écouter ce signal 
         self.modelReady.emit()
 
@@ -92,7 +93,7 @@ class TranscriptionController(QObject):
             return
 
         if self._transcription_thread and self._transcription_thread.isRunning():
-            print("[TranscriptionController] Une transcription est déjà en cours. Opération annulée.")
+            logging.info("[TranscriptionController] Une transcription est déjà en cours. Opération annulée.")
             return
 
         self._progress_bar = progress_bar 
@@ -107,7 +108,7 @@ class TranscriptionController(QObject):
         self._progress_thread.start()
         
 
-        print(f"[TranscriptionController] Préparation de la transcription pour : {audio_path}")
+        logging.info(f"[TranscriptionController] Préparation de la transcription pour : {audio_path}")
             
         # 1. Créer le Worker de transcription/génération ASS
         self._transcription_worker = ASSGenerationWorker(
@@ -145,7 +146,7 @@ class TranscriptionController(QObject):
 
         # Le chemin ASS est connu via le constructeur ou l'attribut du Worker
         ass_path = self._transcription_worker.ass_path
-        print(f"[TranscriptionController] {message} Fichier : {ass_path}")
+        logging.info(f"[TranscriptionController] {message} Fichier : {ass_path}")
         
         self.transcriptionSuccess.emit(ass_path)
         self._cleanup_thread()
@@ -156,7 +157,7 @@ class TranscriptionController(QObject):
         if self._progress_thread:
             self._progress_thread.stop() 
             self._progress_thread.wait()
-            print(f"[Debug] Thread de progression vivant : {self._progress_thread.isRunning()}")
+            logging.info(f"[Debug] Thread de progression vivant : {self._progress_thread.isRunning()}")
             self._progress_thread = None
 
 
@@ -175,6 +176,6 @@ class TranscriptionController(QObject):
         if self._transcription_thread:
             self._transcription_thread.quit()
             self._transcription_thread.wait()
-            print(f"[Debug] Thread vivant : {self._transcription_thread.isRunning()}")
+            logging.info(f"[Debug] Thread vivant : {self._transcription_thread.isRunning()}")
             self._transcription_thread = None
             self._transcription_worker = None

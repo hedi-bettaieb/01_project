@@ -1,3 +1,4 @@
+import logging
 # customized_button.py
 """
 Bouton personnalisé compatible PyQt6 

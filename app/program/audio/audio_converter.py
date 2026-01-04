@@ -1,3 +1,4 @@
+import logging
 # outils/convertisseur_audio.py
 import os
 import re
@@ -53,9 +54,9 @@ class ConvertisseurAudio:
         if os.path.exists(chemin):
             try:
                 os.remove(chemin)
-                print(f"🧹 Ancien {label} supprimé : {chemin}")
+                logging.info(f"🧹 Ancien {label} supprimé : {chemin}")
             except Exception as e:
-                print(f"⚠️ Impossible de supprimer l’ancien {label} :", e)
+                logging.info(f"⚠️ Impossible de supprimer l’ancien {label} :", e)
                 return False
         return True
 
@@ -78,11 +79,11 @@ class ConvertisseurAudio:
             codec = "pcm_s16le"
 
         try:
-            print("🎵 Extraction de l’audio depuis :", video_path)
+            logging.info("🎵 Extraction de l’audio depuis :", video_path)
             clip = mp.VideoFileClip(video_path)
             # L'exception se produit souvent ici (lecture) ou sur write_audiofile (écriture/codec)
             clip.audio.write_audiofile(audio_path, codec=codec, logger=None) # logger=None pour moins de spam console
-            print(f"✅ Audio extrait vers : {audio_path}")
+            logging.info(f"✅ Audio extrait vers : {audio_path}")
             return True
         except Exception as e:
             # 🌟 NE PAS MASQUER L'EXCEPTION ! La relancer pour le Worker.

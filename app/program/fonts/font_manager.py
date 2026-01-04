@@ -1,3 +1,4 @@
+import logging
 #program/fonts/fonts_manager.py
 import os
 from pathlib import Path
@@ -121,13 +122,13 @@ class FontManager:
                 # 💡 CORRECTION: Mettre à jour les préférences de l'utilisateur avec la police de secours
                 self._update_user_preferences(fallback_font) 
                 msg = f"[FontManager] Remplacement de secours auto: '{missing_font}' -> '{fallback_font}' (index 0)."
-                print(msg) 
+                logging.info(msg) 
                 QMessageBox.information(parent_widget, "Remplacement" , msg) 
                 return new_file
                 
             except Exception as e:
                 # Si le remplacement de secours échoue
-                print(f"[ERREUR] Échec du remplacement de secours : {e}")
+                logging.info(f"[ERREUR] Échec du remplacement de secours : {e}")
                 return ass_file
                 
         # --- CHEMIN DE SÉLECTION MANUELLE (Utilisateur a dit OUI) ---
@@ -224,6 +225,6 @@ class FontManager:
             prefs = UserPreferences(self)
             prefs.config["police"] = f"{selected_font}.ttf"
             prefs.sauvegarder_preferences()
-            print(f"[FontManager] Configuration mise à jour vers : {selected_font}")
+            logging.info(f"[FontManager] Configuration mise à jour vers : {selected_font}")
         except Exception as e:
-            print(f"[ERREUR] Mise à jour des préférences : {e}")
+            logging.info(f"[ERREUR] Mise à jour des préférences : {e}")

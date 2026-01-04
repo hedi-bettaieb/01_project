@@ -1,3 +1,4 @@
+import logging
 #program/subtitle/model_manager.py
 import os
 from PyQt6.QtCore import QObject, pyqtSignal, QThread
@@ -53,7 +54,7 @@ class ModelManager(QObject):
         self.download_worker.finished.connect(self._on_download_finished)
         self.download_worker.error.connect(self._on_download_error)
         self.download_worker.statusChanged.connect(
-            lambda msg: print(f"[Download Status] {msg}")
+            lambda msg: logging.info(f"[Download Status] {msg}")
         )
         self.download_worker.start()
     
@@ -82,7 +83,7 @@ class ModelManager(QObject):
         self._stop_progress()
         if self.progress_bar:
             self.progress_bar.setValue(0)
-        print(message)
+        logging.info(message)
         # 🎯 CHANGEMENT : Émettre le signal d'échec vers l'Orchestrateur
         self.downloadFailed.emit(message)
         # QMessageBox.critical(self.parent_window, "Erreur", f"{message}") # Supprimé, l'orchestrateur gère l'UI
@@ -102,7 +103,7 @@ class ModelManager(QObject):
         self.parent_window = parent_window
         
         if self.is_model_complete():
-            print(f"Modèle disponible.\n\nChemin : {self.local_dir}" )
+            logging.info(f"Modèle disponible.\n\nChemin : {self.local_dir}" )
             # La notification est gérée par l'orchestrateur ou l'appelant s'il le souhaite
             return self._load_model()
         
@@ -115,7 +116,7 @@ class ModelManager(QObject):
             return None
             
         # Modèle absent et Internet OK : on démarre le téléchargement
-        print("Modèle absent, téléchargement en cours...")
+        logging.info("Modèle absent, téléchargement en cours...")
         # QMESSAGE AVANT TÉLÉCHARGEMENT
         QMessageBox.information(
             parent_window, # Utilisation du parent_window fourni pour la modalité
@@ -137,20 +138,20 @@ class ModelManager(QObject):
             # 1) Essai GPU
             try:
                 model = WhisperModel(self.local_dir, device="cuda", compute_type="float16")
-                print("Modèle chargé (GPU - FP16).")
+                logging.info("Modèle chargé (GPU - FP16).")
                 return model
             except Exception:
                 pass 
             # 2) CPU int8 (optimisé)
             try:
                 model = WhisperModel(self.local_dir, device="cpu", compute_type="int8")
-                print("Modèle chargé (CPU - INT8 optimisé)." )
+                logging.info("Modèle chargé (CPU - INT8 optimisé)." )
                 return model
             except Exception:
                 pass
             # 3) CPU float32 (compatibilité max)
             model = WhisperModel(self.local_dir, device="cpu", compute_type="float32")
-            print("Model chargé (CPU - FLOAT32 compatibilité maximale)." )
+            logging.info("Model chargé (CPU - FLOAT32 compatibilité maximale)." )
             return model
             
         except Exception as e:
@@ -160,7 +161,7 @@ class ModelManager(QObject):
 
     def _on_stop_requested(self):
         """Appelé lorsque le thread de surveillance détecte une perte de connexion durable."""
-        print("❌ Nettoyage forcé suite à une perte de connexion Internet.")
+        logging.info("❌ Nettoyage forcé suite à une perte de connexion Internet.")
         self._stop_progress()
         if self.download_worker and self.download_worker.isRunning():
             self.download_worker.terminate()

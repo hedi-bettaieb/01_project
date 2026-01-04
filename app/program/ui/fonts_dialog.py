@@ -1,3 +1,4 @@
+import logging
 # program/ui/font_dialog.py
 from pathlib import Path
 from PyQt6.QtWidgets import (
@@ -37,7 +38,7 @@ class FontDialog(QDialog):
         self.font_registry = FontRegistry()
         self.registry = self.font_registry.registry
         self.dialogs_manager = dialogs_manager
-        #print(">>> DEBUG FontDialog: dialogs_manager = ", type(dialogs_manager))
+        #logging.info(">>> DEBUG FontDialog: dialogs_manager = ", type(dialogs_manager))
         #import traceback; traceback.print_stack()
 
         self.police_selectionnee = None
@@ -99,11 +100,11 @@ class FontDialog(QDialog):
             return
 
         nom_police = items[0].text()
-        print(f">>> DEBUG: Cache size = {len(self._cache_polices_chargees)}, Police actuelle: {nom_police}")        
+        logging.info(f">>> DEBUG: Cache size = {len(self._cache_polices_chargees)}, Police actuelle: {nom_police}")        
         
         # 🔥 VÉRIFIER LE CACHE D'ABORD
         if nom_police in self._cache_polices_chargees:
-            print(f">>> DEBUG: Utilisation cache pour '{nom_police}'")
+            logging.info(f">>> DEBUG: Utilisation cache pour '{nom_police}'")
             font_famille = self._cache_polices_chargees[nom_police]
             font = QFont(font_famille, 18)
             self.apercu_edit.setFont(font)
@@ -116,27 +117,27 @@ class FontDialog(QDialog):
         # Charger la police et appliquer l'aperçu
         id_police = QFontDatabase.addApplicationFont(str(font_path))
         if id_police == -1:
-            print(f"[ERREUR] Impossible de charger la police {nom_police}")
+            logging.info(f"[ERREUR] Impossible de charger la police {nom_police}")
             return
 
         familles = QFontDatabase.applicationFontFamilies(id_police)
         if familles:
             # 🔥 METTRE EN CACHE
             self._cache_polices_chargees[nom_police] = familles[0]
-            print(f">>> DEBUG: Nouvelle police ajoutée au cache: '{nom_police}'")
+            logging.info(f">>> DEBUG: Nouvelle police ajoutée au cache: '{nom_police}'")
             font = QFont(familles[0], 18)
             self.apercu_edit.setFont(font)
         else:
-            print(f"[ERREUR] Famille introuvable pour {nom_police}")
+            logging.info(f"[ERREUR] Famille introuvable pour {nom_police}")
 
     def _cleanup_font_cache(self):
         """
         Nettoie le cache des polices chargées.
         À appeler quand le dialogue est fermé.
         """
-        print(f">>> DEBUG: Cleanup called - Avant: {len(self._cache_polices_chargees)} polices en cache")
+        logging.info(f">>> DEBUG: Cleanup called - Avant: {len(self._cache_polices_chargees)} polices en cache")
         self._cache_polices_chargees.clear()
-        print(f">>> DEBUG: Cleanup terminé - Après: {len(self._cache_polices_chargees)} polices en cache")
+        logging.info(f">>> DEBUG: Cleanup terminé - Après: {len(self._cache_polices_chargees)} polices en cache")
 
     def closeEvent(self, event):
         """

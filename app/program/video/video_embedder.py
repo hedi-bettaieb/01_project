@@ -1,3 +1,4 @@
+import logging
 #program/video/incrusteur_video.py
 from pathlib import Path
 import traceback
@@ -44,11 +45,11 @@ class IncrusteurVideo:
 
 # Vérifications
             if not video_path.exists():
-                print(f"❌ Fichier vidéo introuvable: {video_path}")
+                logging.info(f"❌ Fichier vidéo introuvable: {video_path}")
                 return False
                 
             if not ass_file.exists():
-                print(f"❌ Fichier ASS introuvable: {ass_file}")
+                logging.info(f"❌ Fichier ASS introuvable: {ass_file}")
                 return False
 
             
@@ -56,7 +57,7 @@ class IncrusteurVideo:
             # FFmpeg path
             ffmpeg_path = Path(self.paths.get_path("bin/ffmpeg.exe"))
             if not ffmpeg_path.exists():
-                print(f"❌ FFmpeg introuvable: {ffmpeg_path}")
+                logging.info(f"❌ FFmpeg introuvable: {ffmpeg_path}")
                 return False
 
 
@@ -69,10 +70,10 @@ class IncrusteurVideo:
             resultat_langue = manipulator.detect_language_from_ass(str(ass_file))
             if resultat_langue:
                 _, _, langue_code_ffmpeg = resultat_langue # Récupère le code ISO 639-2 (ex: 'ara')
-                print(f"[Incrusteur] Code ISO-2 ASS détecté et utilisé : {langue_code_ffmpeg}")
+                logging.info(f"[Incrusteur] Code ISO-2 ASS détecté et utilisé : {langue_code_ffmpeg}")
             else:
                 langue_code_ffmpeg = "und" # Fallback si la lecture échoue
-                print(f"[Incrusteur] ⚠ Langue ASS non détectée, utilisation de : {langue_code_ffmpeg}")
+                logging.info(f"[Incrusteur] ⚠ Langue ASS non détectée, utilisation de : {langue_code_ffmpeg}")
             
 
             #manipulator = AssFontManipulator()
@@ -111,15 +112,15 @@ class IncrusteurVideo:
             
             subprocess.run(commande_mp4, cwd=working_dir, check=True)
             
-            print("🎉 Génération terminée avec succès !")
+            logging.info("🎉 Génération terminée avec succès !")
             
-            print(f"✅ MP4 généré: {output_path_mp4}")
+            logging.info(f"✅ MP4 généré: {output_path_mp4}")
             
             # RÉSUMÉ FINAL
-            print("🎉 Génération terminée avec succès !")
-            print(f"📁 MKV (sous-titres désactivables) : {output_path_mkv}")
-            print(f"📁 MP4 (sous-titres incrustés)     : {output_path_mp4}")
-            print(f"Langue : {langue_code_ffmpeg}")
+            logging.info("🎉 Génération terminée avec succès !")
+            logging.info(f"📁 MKV (sous-titres désactivables) : {output_path_mkv}")
+            logging.info(f"📁 MP4 (sous-titres incrustés)     : {output_path_mp4}")
+            logging.info(f"Langue : {langue_code_ffmpeg}")
             
             return True, "Génération terminée avec succès." 
                 

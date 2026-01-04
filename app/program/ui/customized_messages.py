@@ -1,3 +1,4 @@
+import logging
 #program/ui/customized_message.py 
 from PyQt6.QtCore import QTimer, Qt 
 from PyQt6.QtWidgets import QMessageBox
@@ -18,5 +19,4 @@ def customized_message(parent, titre, texte, timeout = 4000):
     QTimer.singleShot(timeout, box.accept)
 
     box.show()
-
 

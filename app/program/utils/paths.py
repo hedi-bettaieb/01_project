@@ -144,4 +144,3 @@ class PathManager:
     def get_logs_dir(self) -> Path:
         """Retourne le chemin du dossier de logs dans AppData."""
         return self.logs_dir
-

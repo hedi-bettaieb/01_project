@@ -1,3 +1,4 @@
+import logging
 # program/workers/video_subtitle_worker.py
 from PyQt6.QtCore import QThread, pyqtSignal
 from program.video.video_embedder import IncrusteurVideo

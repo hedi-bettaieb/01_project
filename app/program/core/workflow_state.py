@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -86,4 +87,3 @@ class WorkflowState:
             video = Path(self.video_path)
             return str(video.parent / f"{video.stem}.mp3")
         return None
-

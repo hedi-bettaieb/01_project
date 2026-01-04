@@ -1,3 +1,4 @@
+import logging
 #program/workers/initial_check_worker.py
 from PyQt6.QtCore import QThread, pyqtSignal
 

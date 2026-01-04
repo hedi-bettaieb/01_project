@@ -1,3 +1,4 @@
+import logging
 # program/workers/youtube_worker.py
 import os
 import threading
@@ -123,7 +124,7 @@ class YoutubeDownloadWorker(QThread):
         
 
         ffmpeg_local = self.paths.get_path("bin/ffmpeg.exe")
-        print(f"DEBUG: FFmpeg utilisé -> {ffmpeg_local}")
+        logging.info(f"DEBUG: FFmpeg utilisé -> {ffmpeg_local}")
 
         
         try:

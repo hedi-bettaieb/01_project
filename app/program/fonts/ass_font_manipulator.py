@@ -1,3 +1,4 @@
+import logging
 #program/fonts/ass_font_manipulateur.py
 import os
 import re
@@ -38,7 +39,7 @@ class AssFontManipulator:
             with open(self.ass_json_path, "r", encoding="utf-8") as f:
                 lang_map = json.load(f)
         except Exception as e:
-            print(f"❌ Erreur de lecture de languages.json : {e}")
+            logging.info(f"❌ Erreur de lecture de languages.json : {e}")
             return None
 
         # Lecture du fichier ASS pour extraire la langue
@@ -50,11 +51,11 @@ class AssFontManipulator:
                         detected = line.split(":")[1].strip().lower()
                         break
         except Exception as e:
-            print(f"❌ Erreur de lecture du fichier ASS : {e}")
+            logging.info(f"❌ Erreur de lecture du fichier ASS : {e}")
             return None
 
         if not detected:
-            print("⚠ Pas de champ 'Language:' dans le fichier ASS.")
+            logging.info("⚠ Pas de champ 'Language:' dans le fichier ASS.")
             return None
 
         # Recherche du code langue dans le mapping JSON
@@ -62,10 +63,10 @@ class AssFontManipulator:
             if detected == entry["iso639_1"].lower() or detected == entry["iso639_2"].lower():
                 iso639_1_code = entry["iso639_1"].lower()
                 iso639_2_code = entry["iso639_2"].lower()
-                print(f"[AssManipulator] 🌍 Langue ASS détectée: {name} (ISO-1: {iso639_1_code}, ISO-2: {iso639_2_code})")
+                logging.info(f"[AssManipulator] 🌍 Langue ASS détectée: {name} (ISO-1: {iso639_1_code}, ISO-2: {iso639_2_code})")
                 return name, iso639_1_code, iso639_2_code
 
-        print(f"❌ Code langue ASS inconnu ou non mappé : {detected}")
+        logging.info(f"❌ Code langue ASS inconnu ou non mappé : {detected}")
         return None
 
     def detect_font_in_ass(self, ass_path: str) -> str | None:
@@ -87,7 +88,7 @@ class AssFontManipulator:
                         if len(parts) > 1:
                             return parts[1].strip()
         except Exception as e:
-            print(f"[ERREUR] Lecture du fichier ASS : {str(e)}")
+            logging.info(f"[ERREUR] Lecture du fichier ASS : {str(e)}")
         return None
 
     def replace_font_in_ass(self, old_font: str, new_font: str, ass_file: str, folder_name: str) -> str:
@@ -177,4 +178,4 @@ class AssFontManipulator:
             try:
                 os.remove(temp_path)
             except Exception as e:
-                print(f"[AVERTISSEMENT] Échec du nettoyage du fichier temporaire : {e}")
+                logging.info(f"[AVERTISSEMENT] Échec du nettoyage du fichier temporaire : {e}")

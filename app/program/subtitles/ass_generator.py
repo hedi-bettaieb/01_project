@@ -1,3 +1,4 @@
+import logging
 #program/subtitle/generateur_ass.py 
 import os
 import warnings
@@ -20,10 +21,10 @@ class GenerateurASS:
         from faster_whisper import WhisperModel
 
         if isinstance(modele, WhisperModel):
-            print("🧠 Modèle déjà en mémoire, utilisation directe.")
+            logging.info("🧠 Modèle déjà en mémoire, utilisation directe.")
             self.modele = modele
         else:
-            print(f"🧠 Chargement du modèle Whisper '{modele}'...")
+            logging.info(f"🧠 Chargement du modèle Whisper '{modele}'...")
             self.modele = whisper.load_model(modele)
 
         self.paths = PathManager()
@@ -40,11 +41,11 @@ class GenerateurASS:
         Transcrit automatiquement l'audio en texte, et génère un fichier ASS.
         """
         if not os.path.exists(audio_path):
-            print(f"❌ Fichier audio introuvable : {audio_path}")
+            logging.info(f"❌ Fichier audio introuvable : {audio_path}")
             return False
 
         try:
-            print("🎙️ Transcription audio avec Whisper...")
+            logging.info("🎙️ Transcription audio avec Whisper...")
             # ✅ faster_whisper retourne un tuple (segments, info)
             segments, info = self.modele.transcribe(audio_path, task="transcribe")
             
@@ -52,13 +53,13 @@ class GenerateurASS:
             segments = list(segments)
             
         except Exception as e:
-            print("❌ Erreur Whisper :", e)
+            logging.info("❌ Erreur Whisper :", e)
             import traceback
             traceback.print_exc()
             return False
 
         if not segments:
-            print("❌ Aucun segment détecté.")
+            logging.info("❌ Aucun segment détecté.")
             raise ValueError("TRANSCRIPTION_FAILED_NO_SPEECH") 
         
         # VÉRIFICATION DE LA QUALITÉ ET DE L'HALLUCINATION
@@ -81,7 +82,7 @@ class GenerateurASS:
         # --- LOGIQUE D'ÉCHEC DE LA TRANSCRIPTION ---
         # Si le texte total est très court (moins de 10 caractères au total)
         if len(texte_total) < 10:
-             print("❌ Transcription suspecte : Texte total généré trop court.")
+             logging.info("❌ Transcription suspecte : Texte total généré trop court.")
              return False
 
         # Si la probabilité de non-discours est élevée (disponible dans le segment, mais plus complexe)
@@ -96,7 +97,7 @@ class GenerateurASS:
         
         # On peut simuler l'échec de la transcription si on considère que cette langue suspecte doit être un échec.
         if langue_detectee in ('nn', 'unk'): # 'unk' est parfois retourné pour l'inconnu
-            print(f"❌ Langue détectée suspecte ({langue_detectee}). Considéré comme échec de transcription.")
+            logging.info(f"❌ Langue détectée suspecte ({langue_detectee}). Considéré comme échec de transcription.")
             return False
         
         
@@ -147,16 +148,16 @@ class GenerateurASS:
                     f.write(f"Dialogue: 0,{debut},{fin},Default,,0,0,0,,{texte}\n")
 
         except Exception as e:
-            print("❌ Erreur lors de l'écriture du fichier ASS :", e)
+            logging.info("❌ Erreur lors de l'écriture du fichier ASS :", e)
             import traceback
             traceback.print_exc()
             return False
 
         # 🔥 Message informatif sur le mode utilisé
         mode = "haute visibilité" if style_config['accessibilite'] else "standard"
-        print(f"✅ Sous-titres ASS enregistrés dans : {ass_path}")
-        print(f"🌍 Langue détectée : {info.language}")  # ✅ Utiliser info.language
-        print(f"👁️ Mode d'affichage : {mode}")
+        logging.info(f"✅ Sous-titres ASS enregistrés dans : {ass_path}")
+        logging.info(f"🌍 Langue détectée : {info.language}")  # ✅ Utiliser info.language
+        logging.info(f"👁️ Mode d'affichage : {mode}")
         
         return True
 
@@ -189,7 +190,7 @@ class GenerateurASS:
         couleur_ass = conversion.get(nom_couleur.lower(), "&H00FFFFFF")
 
         if couleur_ass == "&H00FFFFFF" and nom_couleur.lower() not in conversion:
-            print(f"⚠ Attention : couleur '{nom_couleur}' non reconnue. Utilisation du blanc.")
+            logging.info(f"⚠ Attention : couleur '{nom_couleur}' non reconnue. Utilisation du blanc.")
 
         return couleur_ass
 
@@ -200,17 +201,17 @@ class GenerateurASS:
         prefs = self.user_preferences
         try:
                 
-            print(f"[DEBUG] get_style_config() - police préférée: {prefs.get('police', 'Amiri.ttf')}")
-            print(f"[DEBUG] get_style_config() - langue config: {prefs.config.get('langue', 'English')}")
+            logging.info(f"[DEBUG] get_style_config() - police préférée: {prefs.get('police', 'Amiri.ttf')}")
+            logging.info(f"[DEBUG] get_style_config() - langue config: {prefs.config.get('langue', 'English')}")
             
             police_nom_complet = prefs.get("police", "Amiri.ttf")
-            print(f"[DEBUG] police_nom_complet: {police_nom_complet}")
+            logging.info(f"[DEBUG] police_nom_complet: {police_nom_complet}")
             
             police_chemin = prefs.get_police_path(police_nom_complet)
-            print(f"[DEBUG] police_chemin retourné: {police_chemin}")
+            logging.info(f"[DEBUG] police_chemin retourné: {police_chemin}")
             
             police_path = self.paths.get_path(police_chemin)
-            print(f"[DEBUG] police_path résolu: {police_path}")
+            logging.info(f"[DEBUG] police_path résolu: {police_path}")
 
 
                 
@@ -254,7 +255,7 @@ class GenerateurASS:
                 "accessibilite": accessibilite    # 🔥 Pour information
             }
         except Exception as e:
-            print(f"❌ Erreur configuration dans get_style_config(): {e}")
+            logging.info(f"❌ Erreur configuration dans get_style_config(): {e}")
             import traceback
             traceback.print_exc()  # Affiche la stack trace complète
             return self.get_style_config_default()

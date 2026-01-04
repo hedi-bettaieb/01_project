@@ -1,3 +1,4 @@
+import logging
 # program/workers/model_worker.py
 import os
 import threading
@@ -32,7 +33,7 @@ class ModelDownloadWorker(QThread):
     
     def run(self):
         """Télécharge le modèle depuis Hugging Face."""
-        print("🔵 [DEBUG] ModelDownloadWorker.run() DÉMARRÉ")
+        logging.info("🔵 [DEBUG] ModelDownloadWorker.run() DÉMARRÉ")
         
         try:
             pm = PathManager()
@@ -71,12 +72,12 @@ class ModelDownloadWorker(QThread):
                 tqdm_class=None
             )
             
-            print("🟢 [DEBUG] snapshot_download() TERMINÉ")
+            logging.info("🟢 [DEBUG] snapshot_download() TERMINÉ")
             
             # Arrêter la surveillance
             self._stop_monitor()
             
-            print("🟢 [DEBUG] Monitor arrêté")
+            logging.info("🟢 [DEBUG] Monitor arrêté")
             
             # Émettre le signal de fin
             message = f"Le modèle '{self.repo_id}' a été téléchargé avec succès."
@@ -85,16 +86,16 @@ class ModelDownloadWorker(QThread):
             
             self.statusChanged.emit("Téléchargement terminé.")
             
-            print(f"🟢 [DEBUG] Émission du signal finished: {local_dir}")
+            logging.info(f"🟢 [DEBUG] Émission du signal finished: {local_dir}")
             self.finished.emit(local_dir, message)
-            print("🟢 [DEBUG] Signal finished ÉMIS")
+            logging.info("🟢 [DEBUG] Signal finished ÉMIS")
             
         except Exception as e:
-            print(f"🔴 [DEBUG] Exception capturée: {e}")
+            logging.error(f"🔴 [DEBUG] Exception capturée: {e}")
             self._stop_monitor()
             self.error.emit(f"Erreur lors du téléchargement : {str(e)}")
         
-        print("🔵 [DEBUG] ModelDownloadWorker.run() TERMINÉ")
+        logging.info("🔵 [DEBUG] ModelDownloadWorker.run() TERMINÉ")
     
     def _stop_monitor(self):
         """Arrête le thread de surveillance."""
@@ -107,9 +108,8 @@ class ModelDownloadWorker(QThread):
         import time
         while self._monitor_running:
             if not self.monitor.check_internet_connection():
-                print("⚠️ Connexion perdue pendant le téléchargement")
+                logging.info("⚠️ Connexion perdue pendant le téléchargement")
                 self.is_download_aborted = True
             time.sleep(5)
-
 
 

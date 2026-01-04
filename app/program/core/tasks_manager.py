@@ -1,3 +1,4 @@
+import logging
 # program/orchestrator/tasks_manager.py
 import os 
 from PyQt6.QtCore import Qt, QObject, pyqtSignal, QTimer
@@ -89,13 +90,13 @@ class TasksManager(QObject):
                     os.remove(chemin_complet)
                     fichiers_supprimes += 1
                 except Exception as e:
-                    print(f"⚠️ Impossible de supprimer {os.path.basename(chemin_complet)} : {e}")
+                    logging.info(f"⚠️ Impossible de supprimer {os.path.basename(chemin_complet)} : {e}")
 
             if fichiers_supprimes > 0:
-                print(f"✅ Nettoyage terminé : {fichiers_supprimes} fichier(s) .part supprimé(s).")
+                logging.info(f"✅ Nettoyage terminé : {fichiers_supprimes} fichier(s) .part supprimé(s).")
 
         except Exception as e:
-            print(f"⚠️ Erreur lors du nettoyage des fichiers .part : {e}")
+            logging.info(f"⚠️ Erreur lors du nettoyage des fichiers .part : {e}")
 
     # =========================================================================
     # WORKFLOWS
@@ -105,7 +106,7 @@ class TasksManager(QObject):
         if not self._can_start():
             return
 
-        print("[TasksManager][STEP] Début workflow auto")
+        logging.info("[TasksManager][STEP] Début workflow auto")
         self._is_running = True
         self.workflowStarted.emit()
 
@@ -117,11 +118,11 @@ class TasksManager(QObject):
         if not video:
             return self._finish()
 
-        print(f"[TasksManager] Vérification intégrité vidéo: {video}")
+        logging.info(f"[TasksManager] Vérification intégrité vidéo: {video}")
         is_ok, msg = self.validator.verify_media(video)
         if not is_ok:
             QMessageBox.critical(self.window, "Erreur Vidéo", f"La vidéo est invalide :\n{msg}")
-            print(f"[TasksManager][ERROR] {msg}")
+            logging.error(f"[TasksManager][ERROR] {msg}")
             return self._finish()
 
         self.state.reset()
@@ -131,10 +132,10 @@ class TasksManager(QObject):
         self.window.progress_bar.setValue(5)
 
         if not self.dialogs_manager.demander_preferences_style(self.user_preferences, parent_widget):
-            print("[TasksManager] Configuration style annulée.")
+            logging.info("[TasksManager] Configuration style annulée.")
             return self._finish()
 
-        print("[TasksManager][STEP] Fichier validé et style configuré. Chargement du modèle...")
+        logging.info("[TasksManager][STEP] Fichier validé et style configuré. Chargement du modèle...")
         self.transcription_controller.verify_and_load_model(self.window, self.window.progress_bar)
 
     def run_manual_ass_workflow(self, parent_widget):
@@ -142,7 +143,7 @@ class TasksManager(QObject):
         if not self._can_start():
             return
 
-        print("[TasksManager][STEP] Début workflow manuel")
+        logging.info("[TasksManager][STEP] Début workflow manuel")
         self._is_running = True
         self.workflowStarted.emit()
 
@@ -155,11 +156,11 @@ class TasksManager(QObject):
         if not video:
             return self._finish()
 
-        print(f"[TasksManager] Vérification intégrité vidéo: {video}")
+        logging.info(f"[TasksManager] Vérification intégrité vidéo: {video}")
         is_ok, msg = self.validator.verify_media(video)
         if not is_ok:
             QMessageBox.critical(self.window, "Erreur Vidéo", f"La vidéo est invalide :\n{msg}")
-            print(f"[TasksManager][ERROR] {msg}")
+            logging.error(f"[TasksManager][ERROR] {msg}")
             return self._finish()
 
         self.state.reset()
@@ -171,11 +172,11 @@ class TasksManager(QObject):
         if not ass:
             return self._finish()
 
-        print(f"[TasksManager] Vérification intégrité vidéo: {video}")
+        logging.info(f"[TasksManager] Vérification intégrité vidéo: {video}")
         is_ok, msg = self.validator.verify_media(ass)
         if not is_ok:
             QMessageBox.critical(self.window, "Erreur ASS", f"Le fichier ASS est invalide :\n{msg}")
-            print(f"[TasksManager][ERROR] {msg}")
+            logging.error(f"[TasksManager][ERROR] {msg}")
             return self._finish()
 
         self.state.ass_path = ass
@@ -198,7 +199,7 @@ class TasksManager(QObject):
         if not self.dialogs_manager.demander_preferences_style(self.user_preferences, parent_widget):
             return self._finish()
 
-        print(f"[TasksManager][STEP] Début workflow YouTube pour: {url}")
+        logging.info(f"[TasksManager][STEP] Début workflow YouTube pour: {url}")
 
         self._is_running = True
         self.workflowStarted.emit()
@@ -227,7 +228,7 @@ class TasksManager(QObject):
         if not self._is_running:
             return
 
-        print(f"[TasksManager][STEP] Extraction audio de {self.state.video_path}")
+        logging.info(f"[TasksManager][STEP] Extraction audio de {self.state.video_path}")
         self.window.progress_bar.setValue(50)
 
         video = Path(self.state.video_path)
@@ -273,7 +274,7 @@ class TasksManager(QObject):
         if not self._is_running:
             return
 
-        print(f"[TasksManager][STEP] Audio prêt. Lancement transcription.")
+        logging.info(f"[TasksManager][STEP] Audio prêt. Lancement transcription.")
         self.window.progress_bar.setValue(70)
 
         QMessageBox.information(self.window, "Conversion audio", "✅ Conversion audio terminée.\nLa transcription commence...")
@@ -328,7 +329,7 @@ class TasksManager(QObject):
         if not self._is_running:
             return
 
-        print("[TasksManager][SIGNAL] Modèle prêt.")
+        logging.info("[TasksManager][SIGNAL] Modèle prêt.")
         self.window.progress_bar.setValue(20)
 
         if self.state.youtube_url:
@@ -343,7 +344,7 @@ class TasksManager(QObject):
         if not self._is_running:
             return
 
-        print(f"[TasksManager][STEP] Transcription réussie.")
+        logging.info(f"[TasksManager][STEP] Transcription réussie.")
         self.window.progress_bar.setValue(85)
 
         QMessageBox.information(self.window, "Transcription", "✅ Transcription terminée.\nL'incrustation commence...")
@@ -360,7 +361,7 @@ class TasksManager(QObject):
     def _on_youtube_download_error(self, error_message, title=""):
         """Appelé quand le téléchargement YouTube échoue."""
         if title:
-            print(f"[TasksManager] Échec détecté pour '{title}'. Nettoyage des fichiers temporaires...")
+            logging.info(f"[TasksManager] Échec détecté pour '{title}'. Nettoyage des fichiers temporaires...")
             self._nettoyer_fichiers_part(title)
         self._on_error(f"Erreur YouTube ({title}): {error_message}")
 
@@ -369,7 +370,7 @@ class TasksManager(QObject):
         if not self._is_running:
             return
 
-        print(f"[TasksManager][STEP] Téléchargement YouTube réussi: {title}")
+        logging.info(f"[TasksManager][STEP] Téléchargement YouTube réussi: {title}")
         is_ok, msg = self.validator.verify_media(video_path)
         if not is_ok:
             self._on_error(f"Le fichier téléchargé est illisible : {msg}")
@@ -391,7 +392,7 @@ class TasksManager(QObject):
 
     def _finish(self):
         """Reset complet."""
-        print("[TasksManager] Fin du workflow.")
+        logging.info("[TasksManager] Fin du workflow.")
         self._is_running = False
         self.window.btn_process.setEnabled(True)
         self.window.progress_bar.setVisible(False)
@@ -401,7 +402,7 @@ class TasksManager(QObject):
 
     def _on_error(self, message):
         """Gère les erreurs avec QMessageBox."""
-        print(f"[TasksManager][ERROR] {message}")
+        logging.error(f"[TasksManager][ERROR] {message}")
         if hasattr(self, '_original_output_base'):
             self.incrustation_controller.output_path_base = self._original_output_base
 
